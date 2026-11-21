@@ -22,6 +22,7 @@ class DatabaseHealthTests(unittest.TestCase):
         cursor.execute.assert_called_once_with(
             "SELECT id, title, completed, created_at FROM tasks LIMIT 0"
         )
+        cursor.fetchall.assert_called_once_with()
 
     @patch("database.get_connection")
     def test_database_health_fails_when_tasks_table_is_missing(self, get_connection):

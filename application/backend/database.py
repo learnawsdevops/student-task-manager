@@ -27,6 +27,7 @@ def database_health():
         cursor.execute(
             "SELECT id, title, completed, created_at FROM tasks LIMIT 0"
         )
+        cursor.fetchall()
         return True
     except Error:
         return False

@@ -64,6 +64,15 @@ sudo journalctl -u taskmanager -n 50 --no-pager
 sudo mariadb -e "SHOW GRANTS FOR 'admin'@'%';"
 ```
 
+## Health check logs `Unread result found`
+
+The health check reads the zero-row query result before closing its cursor.
+Deploy the latest `database.py` and restart the App service:
+
+```bash
+sudo systemctl restart taskmanager
+```
+
 ## Table initialization reports CREATE denied
 
 On the DB instance, grant `CREATE` on the application database:
