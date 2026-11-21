@@ -19,6 +19,7 @@ sudo cp -r ~/student-task-manager/application/frontend/. /var/www/taskmanager/
 sudo cp ~/student-task-manager/deployment/nginx/taskmanager.conf /etc/nginx/conf.d/taskmanager.conf
 sudo nginx -t
 sudo systemctl enable --now nginx
+sudo systemctl reload nginx
 curl http://localhost/api/health
 ```
 
