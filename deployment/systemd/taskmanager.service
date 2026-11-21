@@ -1,0 +1,16 @@
+[Unit]
+Description=Student Task Manager Flask application
+After=network.target
+
+[Service]
+Type=simple
+User=taskmanager
+Group=taskmanager
+WorkingDirectory=/opt/taskmanager/application/backend
+EnvironmentFile=/etc/taskmanager/taskmanager.env
+ExecStart=/opt/taskmanager/.venv/bin/gunicorn --bind 0.0.0.0:5000 --workers 2 app:app
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
