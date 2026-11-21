@@ -1,43 +1,31 @@
 # 2. Backend Setup
 
-Run on the App EC2 instance.
+Run on the App EC2 instance (Amazon Linux 2023). SSH to the instance, clone
+the project, then set the DB instance's private IPv4 address in
+`application/backend/config.py`:
 
 ```bash
-sudo dnf install -y python3 python3-pip
-sudo useradd --system --home /opt/taskmanager taskmanager
+sudo dnf install -y git python3 python3-pip
+git clone https://github.com/learnawsdevops/student-task-manager.git
+vi ~/student-task-manager/application/backend/config.py
+```
+
+Replace `DB_PRIVATE_IP` in `config.py` with the DB instance's private IPv4
+address. Then install the app:
+
+```bash
+sudo useradd --system --user-group --home /opt/taskmanager taskmanager
 sudo mkdir -p /opt/taskmanager
-sudo cp -r application /opt/taskmanager/
+sudo cp -r ~/student-task-manager/application /opt/taskmanager/
 sudo python3 -m venv /opt/taskmanager/.venv
 sudo /opt/taskmanager/.venv/bin/pip install -r /opt/taskmanager/application/backend/requirements.txt
 ```
 
-Create `/etc/taskmanager/taskmanager.env`:
+Initialize the database table and install the service:
 
 ```bash
-sudo mkdir -p /etc/taskmanager
-sudo chmod 700 /etc/taskmanager
-sudo vi /etc/taskmanager/taskmanager.env
-```
-
-Copy `application/.env.example` to `/etc/taskmanager/taskmanager.env`.
-Set `DB_HOST` to the database server's private IP address. Use
-`admin123` as `DB_PASSWORD`; the remaining values are already
-configured for this training application.
-
-Initialize the table:
-
-```bash
-cd /opt/taskmanager/application/backend
-set -a
-source /etc/taskmanager/taskmanager.env
-set +a
-/opt/taskmanager/.venv/bin/python init_db.py
-```
-
-Install the service:
-
-```bash
-sudo cp /path/to/taskmanager.service /etc/systemd/system/taskmanager.service
+sudo -u taskmanager /opt/taskmanager/.venv/bin/python /opt/taskmanager/application/backend/init_db.py
+sudo cp ~/student-task-manager/deployment/systemd/taskmanager.service /etc/systemd/system/taskmanager.service
 sudo systemctl daemon-reload
 sudo systemctl enable --now taskmanager
 sudo systemctl status taskmanager

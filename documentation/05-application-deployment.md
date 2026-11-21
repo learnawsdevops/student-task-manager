@@ -2,17 +2,12 @@
 
 Deploy in this order:
 
-1. Create database and app security groups.
-2. Install and configure MariaDB on the DB instance.
-3. Copy backend files and install Python dependencies on the App instance.
-4. Add `/etc/taskmanager/taskmanager.env`.
-5. Run `init_db.py`.
-6. Install and start the systemd service.
-7. Deploy frontend files to Nginx on the Web instance.
-8. Replace the App private IP placeholder in Nginx.
-9. Validate and reload Nginx.
+1. Follow [networking](04-networking.md) and create the three security groups.
+2. Follow [database setup](01-database-setup.md).
+3. Follow [backend setup](02-backend-setup.md), setting `DB_PRIVATE_IP`.
+4. Follow [web setup](03-web-server-setup.md), setting `APP_PRIVATE_IP`.
 
-Verification:
+Verify from your computer using the Web instance's public IP:
 
 ```bash
 curl http://<web-ip>/api/health

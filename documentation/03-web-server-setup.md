@@ -1,21 +1,24 @@
 # 3. Web Server Setup
 
-Run on the Web EC2 instance.
+Run on the Web EC2 instance (Amazon Linux 2023). SSH to the instance, clone
+the project, and set the App instance's private IPv4 address in the Nginx
+config:
 
 ```bash
-sudo dnf install -y nginx
-sudo mkdir -p /var/www/taskmanager
-sudo cp -r application/frontend/* /var/www/taskmanager/
-sudo vi deployment/nginx/taskmanager.conf
+sudo dnf install -y git nginx
+git clone https://github.com/learnawsdevops/student-task-manager.git
+vi ~/student-task-manager/deployment/nginx/taskmanager.conf
 ```
 
-Replace `10.0.2.20` with the App EC2 private IP, then install:
+Replace `APP_PRIVATE_IP` in `taskmanager.conf` with the App instance's
+private IPv4 address. Then install and start Nginx:
 
 ```bash
-sudo cp deployment/nginx/taskmanager.conf /etc/nginx/conf.d/taskmanager.conf
+sudo mkdir -p /var/www/taskmanager
+sudo cp -r ~/student-task-manager/application/frontend/. /var/www/taskmanager/
+sudo cp ~/student-task-manager/deployment/nginx/taskmanager.conf /etc/nginx/conf.d/taskmanager.conf
 sudo nginx -t
 sudo systemctl enable --now nginx
-sudo systemctl reload nginx
 curl http://localhost/api/health
 ```
 

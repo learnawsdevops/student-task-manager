@@ -5,7 +5,7 @@
 ```bash
 sudo nginx -t
 sudo systemctl status nginx
-curl http://<app-private-ip>:5000/api/health
+curl http://APP_PRIVATE_IP:5000/api/health
 sudo tail -n 50 /var/log/nginx/error.log
 ```
 
@@ -31,18 +31,20 @@ sudo -u taskmanager /opt/taskmanager/.venv/bin/python --version
 
 ```bash
 sudo ss -ltnp | grep 3306
-mysql -h <db-private-ip> -u admin -p taskmanager
+grep DB_HOST /opt/taskmanager/application/backend/config.py
+curl -i http://127.0.0.1:5000/api/health
 ```
 
 Check MariaDB binding, route/NACL, and DB security group.
 
 ## Database authentication failure
 
-Check `.env` values and the SQL-created username/host. Reopen MariaDB and verify:
+Check the `Config` values in
+`/opt/taskmanager/application/backend/config.py` and the App service logs:
 
-```sql
-SELECT User, Host FROM mysql.user;
-SHOW GRANTS FOR 'admin'@'%';
+```bash
+sudo journalctl -u taskmanager -n 50 --no-pager
+sudo mariadb -e "SHOW GRANTS FOR 'admin'@'%';"
 ```
 
 ## Missing dependencies or disk space
