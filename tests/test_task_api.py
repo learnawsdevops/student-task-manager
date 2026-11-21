@@ -1,11 +1,37 @@
 import os
 import sys
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "application", "backend"))
 
+import database
 from app import create_app
+from mysql.connector import Error
+
+
+class DatabaseHealthTests(unittest.TestCase):
+    @patch("database.get_connection")
+    def test_database_health_checks_tasks_table(self, get_connection):
+        connection = Mock()
+        cursor = Mock()
+        connection.cursor.return_value = cursor
+        get_connection.return_value = connection
+
+        self.assertTrue(database.database_health())
+        cursor.execute.assert_called_once_with(
+            "SELECT id, title, completed, created_at FROM tasks LIMIT 0"
+        )
+
+    @patch("database.get_connection")
+    def test_database_health_fails_when_tasks_table_is_missing(self, get_connection):
+        connection = Mock()
+        cursor = Mock()
+        connection.cursor.return_value = cursor
+        cursor.execute.side_effect = Error("Table 'taskmanager.tasks' doesn't exist")
+        get_connection.return_value = connection
+
+        self.assertFalse(database.database_health())
 
 
 class TaskApiTests(unittest.TestCase):
@@ -19,6 +45,12 @@ class TaskApiTests(unittest.TestCase):
         response = self.client.get("/api/health")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json["database"], "connected")
+
+    @patch("database.database_health", return_value=False)
+    def test_health_reports_database_unavailable(self, health):
+        response = self.client.get("/api/health")
+        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.json["database"], "unavailable")
 
     @patch("database.fetch_tasks", return_value=[
         {"id": 1, "title": "Study", "completed": False, "created_at": "2026-01-01"}

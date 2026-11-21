@@ -32,4 +32,9 @@ sudo systemctl status taskmanager
 curl http://127.0.0.1:5000/api/health
 ```
 
+The health endpoint checks that the `tasks` table and the columns used by the
+API exist. `LIMIT 0` returns no task rows; it only validates the table query.
+An HTTP 200 means the database is ready, while 503 means the connection,
+table, or required columns are unavailable.
+
 Gunicorn runs Flask. systemd starts it at boot and restarts it after failures.

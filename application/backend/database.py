@@ -22,8 +22,9 @@ def database_health():
     try:
         connection = get_connection(Config.DB_NAME)
         cursor = connection.cursor()
-        cursor.execute("SELECT 1")
-        cursor.fetchone()
+        cursor.execute(
+            "SELECT id, title, completed, created_at FROM tasks LIMIT 0"
+        )
         cursor.close()
         connection.close()
         return True
