@@ -32,6 +32,8 @@ class DatabaseHealthTests(unittest.TestCase):
         get_connection.return_value = connection
 
         self.assertFalse(database.database_health())
+        cursor.close.assert_called_once_with()
+        connection.close.assert_called_once_with()
 
 
 class TaskApiTests(unittest.TestCase):

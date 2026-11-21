@@ -19,17 +19,24 @@ def get_connection(db_name=None):
 
 
 def database_health():
+    connection = None
+    cursor = None
     try:
         connection = get_connection(Config.DB_NAME)
         cursor = connection.cursor()
         cursor.execute(
             "SELECT id, title, completed, created_at FROM tasks LIMIT 0"
         )
-        cursor.close()
-        connection.close()
         return True
     except Error:
         return False
+    finally:
+        try:
+            if cursor is not None:
+                cursor.close()
+        finally:
+            if connection is not None:
+                connection.close()
 
 
 def fetch_tasks():
